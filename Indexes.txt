@@ -1,0 +1,110 @@
+CREATE TABLE places (
+    place_id INT AUTO_INCREMENT,                -- PRIMARY KEY
+    name VARCHAR(100),                          -- NORMAL INDEX
+    email VARCHAR(100),                         -- UNIQUE INDEX
+    description TEXT,                           -- FULLTEXT INDEX
+    location POINT NOT NULL,                    -- SPATIAL INDEX
+    created_at DATE,                            -- Composite Index
+    status VARCHAR(20),                         -- Composite Index
+    PRIMARY KEY (place_id)                      -- 1. PRIMARY KEY
+);
+
+====================================================================================
+
+INSERT INTO places (name, email, description, location, created_at, status)
+VALUES
+('Central Park', 'central@example.com', 
+ 'A large public park in New York City with open spaces and trees.', 
+ ST_GeomFromText('POINT(40.785091 -73.968285)'), 
+ '2025-08-28', 'open'),
+
+INSERT INTO places (name, email, description, location, created_at, status)
+VALUES
+('Golden Gate Bridge', 'goldengate@example.com', 
+ 'A suspension bridge spanning the Golden Gate in San Francisco.', 
+ ST_GeomFromText('POINT(37.819929 -122.478255)'), 
+ '2025-08-27', 'closed'),
+
+INSERT INTO places (name, email, description, location, created_at, status)
+VALUES
+('Eiffel Tower', 'eiffel@example.com', 
+ 'A wrought-iron lattice tower on the Champ de Mars in Paris.', 
+ ST_GeomFromText('POINT(48.858844 2.294351)'), 
+ '2025-08-26', 'open'),
+
+INSERT INTO places (name, email, description, location, created_at, status)
+VALUES
+('Louvre Museum', 'louvre@example.com', 
+ 'The world\'s largest art museum and a historic monument in Paris.', 
+ ST_GeomFromText('POINT(48.860611 2.337644)'), 
+ '2025-08-26', 'open'),
+
+INSERT INTO places (name, email, description, location, created_at, status)
+VALUES
+('Central Library', 'library@example.com', 
+ 'A public library with extensive book collections and study areas.', 
+ ST_GeomFromText('POINT(34.052235 -118.243683)'), 
+ '2025-08-25', 'renovation');
+
+=======================================================================
+Anaylse the query performance
+
+BEFORE indexing 'name'
+EXPLAIN SELECT * FROM places WHERE name = 'Central Park';
+
+======================================================================================
+
+Add Indexes One by One:-
+
+2. UNIQUE INDEX on email
+ALTER TABLE places ADD UNIQUE INDEX idx_email (email);
+
+3. NORMAL INDEX on name
+CREATE INDEX idx_name ON places(name);
+
+4. FULLTEXT INDEX on description
+   FULLTEXT works best on TEXT or VARCHAR fields.
+
+CREATE FULLTEXT INDEX idx_description ON places(description);
+
+
+5.SPATIAL INDEX on location
+ Requires column to be NOT NULL and of type GEOMETRY or POINT
+
+ CREATE SPATIAL INDEX idx_location ON places(location);
+
+
+6. COMPOSITE INDEX on created_at and status
+CREATE INDEX idx_created_status ON places(created_at, status);
+
+
+==================================================================
+
+
+1. Query using NORMAL INDEX on name
+SELECT * FROM places WHERE name = 'Central Park';
+
+Need Analysis:
+EXPLAIN SELECT * FROM places WHERE name = 'Central Park';
+
+Before adding an index, this may show:
+type: ALL → full table scan
+rows: <number> → many rows scanned
+key: NULL → no index used
+
+After adding an index, it may show:
+type: ref or range → index used
+key: idx_name → index name being used
+rows: <lower number> → fewer rows scanned
+
+2. Query using UNIQUE INDEX on email
+SELECT * FROM places WHERE email = 'eiffel@example.com';
+
+3. Query using FULLTEXT INDEX on description
+SELECT * FROM places 
+WHERE MATCH(description) AGAINST ('public library');
+
+
+4. Query using COMPOSITE INDEX on created_at and status
+SELECT * FROM places 
+WHERE created_at = '2025-08-26' AND status = 'open';
