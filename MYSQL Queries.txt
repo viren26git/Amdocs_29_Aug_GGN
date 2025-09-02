@@ -1,0 +1,1144 @@
+
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    category VARCHAR(50),
+    price DECIMAL(10,2),
+    stock INT,
+    rating DECIMAL(3,2),
+    created_at DATE
+);
+
+CREATE TABLE customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    country VARCHAR(50)
+);
+
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
+    product_id INT,
+    order_date DATE,
+    quantity INT,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+
+INSERT INTO products (product_name, category, price, stock, rating, created_at) VALUES
+('Wireless Mouse', 'Electronics', 25.99, 150, 4.5, '2025-08-10'),
+('Bluetooth Speaker', 'Electronics', 45.00, 80, 4.7, '2025-08-01'),
+('Running Shoes', 'Footwear', 60.00, 200, 4.3, '2025-07-15'),
+('Leather Wallet', 'Accessories', 30.00, 300, 4.2, '2025-06-20'),
+('Laptop Stand', 'Electronics', 20.50, 50, 4.6, '2025-08-20'),
+('Smart Watch', 'Electronics', 120.00, 40, 4.8, '2025-08-25'),
+('Casual Shirt', 'Clothing', 25.00, 180, 4.1, '2025-07-30'),
+('Backpack', 'Accessories', 40.00, 90, 4.4, '2025-06-10'),
+('Sunglasses', 'Accessories', 15.00, 250, 4.0, '2025-08-05'),
+('Formal Shoes', 'Footwear', 80.00, 60, 4.6, '2025-08-18');
+
+
+INSERT INTO customers (customer_name, email, country) VALUES
+('Alice Johnson', 'alice.j@example.com', 'USA'),
+('Bob Smith', 'bob.smith@example.com', 'Canada'),
+('Carlos Diaz', 'carlos.d@example.com', 'Mexico'),
+('Diana Patel', 'diana.p@example.com', 'India'),
+('Elena Rossi', 'elena.r@example.com', 'Italy'),
+('Frank Zhang', 'frank.z@example.com', 'China'),
+('Grace Kim', 'grace.k@example.com', 'South Korea'),
+('Hassan Ali', 'hassan.a@example.com', 'UAE'),
+('Isabelle Laurent', 'isabelle.l@example.com', 'France'),
+('Jack Lee', 'jack.lee@example.com', 'USA');
+
+
+INSERT INTO orders (customer_id, product_id, order_date, quantity) VALUES
+(1, 1, '2025-08-05', 2),
+(2, 2, '2025-08-06', 1),
+(3, 3, '2025-08-07', 3),
+(1, 4, '2025-08-10', 1),
+(4, 5, '2025-08-10', 2),
+(5, 6, '2025-08-12', 1),
+(6, 1, '2025-08-15', 4),
+(7, 3, '2025-08-16', 2),
+(8, 2, '2025-08-17', 1),
+(9, 8, '2025-08-18', 1),
+(10, 10, '2025-08-19', 2),
+(2, 9, '2025-08-20', 1),
+(3, 7, '2025-08-21', 3),
+(4, 1, '2025-08-21', 1),
+(5, 5, '2025-08-22', 2);
+
+-------------------------------------------------------------------
+ALTER TABLE products ADD COLUMN brand VARCHAR(50);
+
+-------------------------------------------------------------------
+SELECT * FROM products
+WHERE category = 'Electronics' AND price > 30;
+
+--------------------------------------------------------------------
+ORDER BY Example
+SELECT product_name, price FROM products
+ORDER BY price DESC;
+
+--------------------------------------------------------------------
+GROUP BY + HAVING
+SELECT category, AVG(price) AS avg_price, COUNT(*) AS product_count
+FROM products
+GROUP BY category
+HAVING AVG(price) > 30;
+-------------------------------------------------------------------
+
+1. List all products in the "Accessories" category.
+SELECT * FROM products
+WHERE category = 'Accessories';
+
+
+2. Find the top 3 most expensive products.
+SELECT * FROM products
+ORDER BY price DESC
+LIMIT 3;
+
+
+3. Which products have a stock less than 100 units?
+SELECT * FROM products
+WHERE stock < 100;
+
+
+4. Update the brand name for all electronics to "TechZone".
+UPDATE products
+SET brand = 'TechZone'
+WHERE category = 'Electronics';
+
+
+5. Add a new column called discount to the table.
+ALTER TABLE products
+ADD COLUMN discount DECIMAL(5,2);
+
+
+6. Calculate the average price per category.
+SELECT category, AVG(price) AS avg_price
+FROM products
+GROUP BY category;
+
+7. Find all products added in August 2025.
+SELECT * FROM products
+WHERE MONTH(created_at) = 8 AND YEAR(created_at) = 2025;
+
+8. Get the count of products in each category that have a rating above 4.5.
+SELECT category, COUNT(*) AS high_rated_products
+FROM products
+WHERE rating > 4.5
+GROUP BY category;
+
+9. List products ordered by rating in descending order.
+SELECT * FROM products
+ORDER BY rating DESC;
+
+10. Delete products where stock is 0.
+DELETE FROM products
+WHERE stock = 0;
+
+======================================================================================
+=================================   JOINS ============================================
+======================================================================================
+
+1. Show each product's name along with the total quantity ordered.
+SELECT p.product_name, SUM(o.quantity) AS total_quantity
+FROM products p
+JOIN orders o ON p.product_id = o.product_id
+GROUP BY p.product_name;
+
+
+2. List all customers who have placed at least one order and the product(s) they purchased.
+SELECT c.customer_name, p.product_name, o.quantity
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+JOIN products p ON o.product_id = p.product_id;
+
+
+3. List all customers and include product(s) they ordered (if any).
+SELECT c.customer_name, p.product_name
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+LEFT JOIN products p ON o.product_id = p.product_id;
+
+4. Find all products that have never been ordered.
+SELECT p.product_name
+FROM products p
+LEFT JOIN orders o ON p.product_id = o.product_id
+WHERE o.order_id IS NULL;
+
+
+5. Show the most ordered product and the number of times it was ordered.
+SELECT p.product_name, SUM(o.quantity) AS total_sold
+FROM products p
+JOIN orders o ON p.product_id = o.product_id
+GROUP BY p.product_name
+ORDER BY total_sold DESC
+LIMIT 1;
+
+
+6. Show all customers who ordered products in August 2025.
+SELECT DISTINCT c.customer_name
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+WHERE o.order_date BETWEEN '2025-08-01' AND '2025-08-31';
+
+
+7. Show product categories and the total revenue generated by each.
+SELECT p.category, SUM(p.price * o.quantity) AS total_revenue
+FROM products p
+JOIN orders o ON p.product_id = o.product_id
+GROUP BY p.category;
+
+
+8. List customers who ordered more than 3 units of any product in a single order.
+SELECT c.customer_name, p.product_name, o.quantity
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+JOIN products p ON o.product_id = p.product_id
+WHERE o.quantity > 3;
+
+
+9. For each country, show number of customers and total orders made.
+SELECT c.country, COUNT(DISTINCT c.customer_id) AS total_customers, COUNT(o.order_id) AS total_orders
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.country;
+
+
+10. Show orders where the ordered product has a rating below 4.2.
+SELECT o.order_id, p.product_name, p.rating
+FROM orders o
+JOIN products p ON o.product_id = p.product_id
+WHERE p.rating < 4.2;
+
+
+======================================================================================
+=================================  SUBQUERY ==========================================
+======================================================================================
+
+1. Find the product(s) with the highest price.
+
+SELECT product_name, price
+FROM products
+WHERE price = (SELECT MAX(price) FROM products);
+
+
+
+2. List customers who have placed more than 1 orders.
+
+SELECT customer_name
+FROM customers
+WHERE customer_id IN (
+    SELECT customer_id
+    FROM orders
+    GROUP BY customer_id
+    HAVING COUNT(order_id) > 2
+);
+
+
+3. Show products that have never been ordered.
+
+SELECT product_name
+FROM products
+WHERE product_id NOT IN (
+    SELECT DISTINCT product_id
+    FROM orders
+);
+
+
+
+4. Show customers who ordered the most expensive product.
+
+SELECT DISTINCT c.customer_name
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+WHERE o.product_id = (
+    SELECT product_id
+    FROM products
+    ORDER BY price DESC
+    LIMIT 1
+);
+
+
+
+5. Find products whose price is above the average price of all products.
+
+SELECT product_name, price
+FROM products
+WHERE price > (
+    SELECT AVG(price) FROM products
+);
+
+
+======================================================================================
+=================================  Views ==========================================
+======================================================================================
+
+
+Create a view that shows all order details, including customer name and product name.
+
+Question:
+Create a view called order_summary that shows the order ID, order date, customer name, product name, and quantity.
+
+Query:
+CREATE VIEW order_summary AS
+SELECT 
+    o.order_id,
+    o.order_date,
+    c.customer_name,
+    p.product_name,
+    o.quantity
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN products p ON o.product_id = p.product_id;
+
+
+
+2. Use a view to find the total quantity of each product ordered.
+
+Question:
+Create a view called product_sales that shows each product and total quantity sold. 
+Then, query the view to find products sold more than 3 times.
+
+Create View:
+CREATE VIEW product_sales AS
+SELECT 
+    p.product_name,
+    SUM(o.quantity) AS total_sold
+FROM products p
+JOIN orders o ON p.product_id = o.product_id
+GROUP BY p.product_name;
+
+
+Use the View:
+SELECT * FROM product_sales
+WHERE total_sold > 3;
+
+
+
+3. Create a view to display customers and the number of orders they’ve placed.
+
+Question:
+Create a view called customer_order_count that shows customer name and number of orders they made.
+
+Query:
+CREATE VIEW customer_order_count AS
+SELECT 
+    c.customer_name,
+    COUNT(o.order_id) AS order_count
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_name;
+
+
+=======================================================================================================
+================  Views + JOINs + Subqueries together  ================================================
+=======================================================================================================
+
+(1) Create a view that shows each order with customer name, product name, category, quantity, and total order amount. Then, write a query to fetch only those orders where the order amount is greater than the average order amount.
+
+Step 1: Create the View
+CREATE VIEW OrderDetails AS
+SELECT o.order_id,
+       c.customer_name,
+       p.product_name,
+       p.category,
+       o.quantity,
+       (o.quantity * p.price) AS total_amount
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN products p ON o.product_id = p.product_id;
+
+Step 2: Use Subquery on the View
+SELECT *
+FROM OrderDetails
+WHERE total_amount > (SELECT AVG(total_amount) FROM OrderDetails);
+
+
+
+
+(2) Create a view that shows customers with the total amount they spent across all orders. Then, fetch the top customer(s) who spent the maximum amount using a subquery.
+
+Step 1: Create the View
+CREATE VIEW CustomerSpending AS
+SELECT c.customer_id,
+       c.customer_name,
+       SUM(o.quantity * p.price) AS total_spent
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+JOIN products p ON o.product_id = p.product_id
+GROUP BY c.customer_id, c.customer_name;
+
+Step 2: Use Subquery on the View
+SELECT *
+FROM CustomerSpending
+WHERE total_spent = (SELECT MAX(total_spent) FROM CustomerSpending);
+
+
+=====================================================================================================
+=================== Stored Functions ============================
+===================================================================================================
+
+(1) Create a stored function that returns the full name by combining first and last names.
+
+DELIMITER $$
+
+CREATE FUNCTION GetFullName(firstName VARCHAR(50), lastName VARCHAR(50))
+RETURNS VARCHAR(120)
+DETERMINISTIC
+BEGIN
+    RETURN CONCAT(firstName, ' ', lastName);
+END$$
+
+DELIMITER ;
+
+Calling of function below:
+SELECT GetFullName('Viren', 'Sharma') AS FullName;
+
+
+
+(2) Create a stored function that returns the price of a product given its product_id.
+
+DELIMITER $$
+
+CREATE FUNCTION GetProductPrice(prodId INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE prodPrice DECIMAL(10,2);
+    SELECT price INTO prodPrice
+    FROM products
+    WHERE product_id = prodId;
+    RETURN prodPrice;
+END$$
+
+DELIMITER ;
+
+Calling of function below:
+SELECT GetProductPrice(6) AS ProductPrice;
+
+
+
+(3) Create a stored function that returns the total order amount for a given order_id.
+
+DELIMITER $$
+
+CREATE FUNCTION GetOrderTotal(orderId INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE total DECIMAL(10,2);
+    SELECT SUM(o.quantity * p.price)
+    INTO total
+    FROM orders o
+    JOIN products p ON o.product_id = p.product_id
+    WHERE o.order_id = orderId;
+    RETURN IFNULL(total, 0);
+END$$
+
+DELIMITER ;
+
+
+Calling of function below:
+SELECT GetOrderTotal(1) AS OrderAmount;
+
+
+
+
+(4) Create a stored function that returns the total spending of a customer given their customer_id.
+
+DELIMITER $$
+
+CREATE FUNCTION GetCustomerSpending(custId INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE totalSpent DECIMAL(10,2);
+    SELECT SUM(o.quantity * p.price)
+    INTO totalSpent
+    FROM orders o
+    JOIN products p ON o.product_id = p.product_id
+    WHERE o.customer_id = custId;
+    RETURN IFNULL(totalSpent, 0);
+END$$
+
+DELIMITER ;
+
+Calling of function below:
+SELECT customer_name, GetCustomerSpending(customer_id) AS TotalSpent
+FROM customers;
+
+
+
+
+=====================================================================================================
+============================== Stored PROCEDURE  ====================================================
+=====================================================================================================
+
+Example 1: Simple Procedure (no parameter)
+
+DELIMITER $$
+
+CREATE PROCEDURE ShowAllProducts()
+BEGIN
+    SELECT * FROM products;
+END$$
+
+DELIMITER ;
+
+-- Call the procedure
+CALL ShowAllProducts();
+
+
+
+
+Example 2: Procedure with IN parameter
+
+DELIMITER $$
+
+CREATE PROCEDURE GetCustomerOrders(IN custId INT)
+BEGIN
+    SELECT o.order_id, p.product_name, o.quantity, o.order_date
+    FROM orders o
+    JOIN products p ON o.product_id = p.product_id
+    WHERE o.customer_id = custId;
+END$$
+
+DELIMITER ;
+
+-- Call the procedure
+CALL GetCustomerOrders(1);
+
+
+
+(3) Write a stored procedure in MySQL that accepts a customer ID as input (IN parameter) and 
+returns the total amount spent by that customer as output (OUT parameter).
+
+Solution:
+
+DELIMITER $$
+
+CREATE PROCEDURE GetTotalSpending(
+    IN custId INT, 
+    OUT totalSpent DECIMAL(10,2)
+)
+BEGIN
+    SELECT SUM(o.quantity * p.price)
+    INTO totalSpent
+    FROM orders o
+    JOIN products p ON o.product_id = p.product_id
+    WHERE o.customer_id = custId;
+END$$
+
+DELIMITER ;
+
+-- Call the procedure
+CALL GetTotalSpending(1, @spending);
+
+-- Display the OUT value
+SELECT @spending AS TotalSpent;
+
+
+
+(4) Write a stored procedure that accepts a product ID as input (IN) and returns the total number 
+of times that product has been ordered (OUT).
+
+Solution: 
+DELIMITER $$
+
+CREATE PROCEDURE GetProductOrderCount(
+    IN prodId INT, 
+    OUT totalOrders INT
+)
+BEGIN
+    SELECT SUM(quantity)
+    INTO totalOrders
+    FROM orders
+    WHERE product_id = prodId;
+END$$
+
+DELIMITER ;
+
+-- Call the procedure
+CALL GetProductOrderCount(1, @orderCount);
+SELECT @orderCount AS TotalOrdered;
+
+
+
+
+(5) Create a stored procedure that:
+- Takes customer_id as IN
+- Returns the total spending of that customer as OUT
+- Returns the last order date in an INOUT parameter (if no value given, it will be filled)
+
+Solution:
+DELIMITER $$
+
+CREATE PROCEDURE GetCustomerSummary(
+    IN custId INT,
+    OUT totalSpent DECIMAL(10,2),
+    INOUT lastOrder DATE
+)
+BEGIN
+    -- Calculate total spending
+    SELECT SUM(o.quantity * p.price)
+    INTO totalSpent
+    FROM orders o
+    JOIN products p ON o.product_id = p.product_id
+    WHERE o.customer_id = custId;
+
+    -- Get last order date
+    SELECT MAX(order_date)
+    INTO lastOrder
+    FROM orders
+    WHERE customer_id = custId;
+END$$
+
+DELIMITER ;
+
+-- Example call
+SET @cust = 1;        -- Alice Johnson
+SET @lastOrder = NULL;
+CALL GetCustomerSummary(@cust, @total, @lastOrder);
+
+SELECT @total AS TotalSpent, @lastOrder AS LastOrderDate;
+
+=========================================================================================
+==========================  TRIGGERS  ================================
+=========================================================================================
+
+Example 1: Update Stock Automatically After Order , If an order is placed, reduce product stock automatically.
+
+DELIMITER $$
+
+CREATE TRIGGER after_order_insert
+AFTER INSERT ON orders
+FOR EACH ROW
+BEGIN
+    UPDATE products
+    SET stock = stock - NEW.quantity       -- NEW means the quantity from the new order row
+    WHERE product_id = NEW.product_id;     -- NEW means the product_id of the new order
+END$$
+
+DELIMITER ;
+
+
+AFTER INSERT : fires after a new row is added to orders
+NEW.quantity : gets the quantity ordered
+This ensures product stock reduces automatically without manual update.
+
+--> Insert an order for it:
+
+INSERT INTO orders (customer_id, product_id, order_date, quantity)
+VALUES (1, 1, '2025-08-31', 5);
+
+--> Now check stock:
+
+SELECT product_name, stock FROM products WHERE product_id = 1;
+
+Stock will be reduced automatically (150 - 5 = 145).
+
+
+
+
+Example 2: Prevent Negative Stock. Before reducing stock, check if enough stock exists.
+
+DELIMITER $$
+
+CREATE TRIGGER before_order_insert
+BEFORE INSERT ON orders
+FOR EACH ROW
+BEGIN
+    DECLARE currentStock INT;
+
+    SELECT stock INTO currentStock
+    FROM products
+    WHERE product_id = NEW.product_id;
+
+    IF currentStock < NEW.quantity THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Not enough stock for this order';
+    END IF;
+END$$
+
+DELIMITER ;
+
+BEFORE INSERT → runs before inserting new order
+If stock is less than requested, it raises an error (SIGNAL).
+
+
+Suppose product ID = 5 (Laptop Stand) has stock = 50.
+
+Try inserting an order with more than available stock:
+INSERT INTO orders (customer_id, product_id, order_date, quantity)
+VALUES (2, 5, '2025-08-31', 100);
+
+
+This will throw an error:(here we have ordered 100 quantity but the stock is 50)
+ERROR 1644 (45000): Not enough stock for this order
+
+
+
+
+
+Example 3: Restore Stock if an Order is Deleted
+When an order is canceled (deleted from the orders table), the stock of the related product should increase back by the same quantity.
+
+1. Create the trigger
+DELIMITER $$
+
+CREATE TRIGGER after_order_delete
+AFTER DELETE ON orders
+FOR EACH ROW
+BEGIN
+    UPDATE products
+    SET stock = stock + OLD.quantity   -- OLD = deleted row’s quantity
+    WHERE product_id = OLD.product_id; -- OLD = deleted row’s product_id
+END$$
+
+DELIMITER ;
+
+
+Step 1: Check stock before
+Suppose product ID = 1 (Wireless Mouse) currently has stock 145.
+SELECT product_id, product_name, stock FROM products WHERE product_id = 1;
+
+Step 2: Delete an order
+DELETE FROM orders WHERE order_id = 1;
+
+Step 3: Check stock again
+SELECT product_id, product_name, stock FROM products WHERE product_id = 1;
+
+Stock will be restored (e.g., 145 + 2 = 147 if that order had quantity = 2).
+
+
+
+
+
+
+Example 4: Adjust Stock if Order Quantity is Updated
+If a customer changes the quantity of an order, we must update the stock in the products table accordingly.
+
+For this, we compare the OLD.quantity (before update) and NEW.quantity (after update).
+
+1. Create the trigger:
+
+DELIMITER $$
+
+CREATE TRIGGER after_order_update
+AFTER UPDATE ON orders
+FOR EACH ROW
+BEGIN
+    -- If quantity increases, reduce extra stock
+    UPDATE products
+    SET stock = stock - (NEW.quantity - OLD.quantity)
+    WHERE product_id = NEW.product_id;
+END$$
+
+DELIMITER ;
+
+
+How it works ?
+--> OLD.quantity → Previous order quantity.
+--> NEW.quantity → New order quantity.
+--> (NEW.quantity - OLD.quantity) → Difference.
+
+If quantity increases → Stock decreases.
+If quantity decreases → Stock increases (since the difference will be negative).
+
+
+Step 1: Check stock before update
+SELECT product_id, product_name, stock FROM products WHERE product_id = 1;
+
+
+Step 2: Update an order
+Suppose an existing order (ID = 1) had quantity = 2, and we change it to 5:
+
+UPDATE orders
+SET quantity = 5
+WHERE order_id = 1;
+
+
+Step 3: Check stock again
+SELECT product_id, product_name, stock FROM products WHERE product_id = 1;
+Stock will decrease by (5 - 2 = 3) units.
+
+
+
+
+Question 4 : Create a trigger that prevents insertion of an order if the ordered quantity is greater than available stock.
+
+DELIMITER $$
+
+CREATE TRIGGER before_order_insert
+BEFORE INSERT ON orders
+FOR EACH ROW
+BEGIN
+    DECLARE available_stock INT;
+
+    SELECT stock INTO available_stock
+    FROM products
+    WHERE product_id = NEW.product_id;
+
+    IF NEW.quantity > available_stock THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Not enough stock available!'; 
+    END IF;
+END$$
+
+DELIMITER ;
+
+Explanation
+BEFORE INSERT ensures stock is validated before saving order.
+If order quantity > stock → raises an error (SIGNAL).
+
+Test:
+
+INSERT INTO orders (customer_id, product_id, order_date, quantity)
+VALUES (2, 6, '2025-08-30', 100);
+
+Error: Not enough stock available!
+
+
+
+
+Question 5: Create a trigger that logs deleted orders into a new table order_log for auditing.
+
+-- First create log table
+CREATE TABLE order_log (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    customer_id INT,
+    product_id INT,
+    quantity INT,
+    deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+DELIMITER $$
+
+CREATE TRIGGER log_order_delete
+AFTER DELETE ON orders
+FOR EACH ROW
+BEGIN
+    INSERT INTO order_log (order_id, customer_id, product_id, quantity)
+    VALUES (OLD.order_id, OLD.customer_id, OLD.product_id, OLD.quantity);
+END$$
+
+DELIMITER ;
+
+Explanation:
+
+AFTER DELETE → Trigger fires when an order is deleted.
+OLD values are copied into order_log.
+
+Useful for tracking cancellations.
+
+Test:
+DELETE FROM orders WHERE order_id = 2;
+SELECT * FROM order_log;
+
+Deleted order details appear in order_log.
+
+
+So now you have 5 different trigger examples:
+- Reduce stock on new order (AFTER INSERT).
+- Restore stock on delete order (AFTER DELETE).
+- Adjust stock on update order (AFTER UPDATE).
+- Prevent order if stock not enough (BEFORE INSERT).
+- Log deleted orders (AFTER DELETE → log table).
+
+
+
+==============================================================================
+=============================  CURSORS =======================================
+==============================================================================
+
+Example 1: Calculate total orders for each customer using a cursor
+
+DELIMITER $$
+
+CREATE PROCEDURE CustomerOrderSummary()
+BEGIN
+    DECLARE done INT DEFAULT 0;   -- Declares a flag variable done initially set to 0. Later, it will become 1 when there                 
+                                  -- are no more rows to fetch.
+    DECLARE cid INT;
+    DECLARE totalOrders INT;
+
+    DECLARE cur CURSOR FOR SELECT customer_id FROM customers;    -- Defines a cursor called cur. The cursor will iterate 
+                                                                 -- through the results of the query. So the cursor will 
+                                                                 -- step through each row of product names one at a time.
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;         -- Defines what should happen when the cursor runs out of     
+                                                                 -- rows. When there are no more rows to fetch, MySQL 
+                                                                 -- triggers NOT FOUND.Here, instead of stopping with an  
+                                                                 -- error, it sets done = 1
+    
+    OPEN cur;                                    -- Opens the cursor.                          
+
+    read_loop: LOOP                              -- Defines a loop labeled read_loop.
+                                                 -- This loop keeps fetching rows until there are no more.
+
+        FETCH cur INTO cid;                      -- Retrieves the next row from the cursor. The product_name value is  
+                                                 -- stored in the variable pname.If there are no more rows, the NOT FOUND 
+                                                 -- handler sets done = 1.
+        
+        IF done THEN                             -- Checks if done = 1.If true, exits the loop (because all rows are 
+                                                 -- already fetched)
+            LEAVE read_loop;
+        END IF;
+
+        SELECT COUNT(*) INTO totalOrders
+        FROM orders
+        WHERE customer_id = cid;
+
+        SELECT CONCAT('Customer ID: ', cid, ' has ', totalOrders, ' orders.') AS Summary;
+    END LOOP;
+
+    CLOSE cur;                             -- After finishing, the cursor must be closed. This frees memory and resources.
+END$$
+
+DELIMITER ;
+
+
+Call:-
+CALL CustomerOrderSummary();
+
+When above runs then what happens ?
+1) Cursor opens → first row fetched  → printed.
+2) Next iteration → fetches (next row of customer) → printed.
+3) Repeats until all 10 customers are shown.
+4) When no row is left → done = 1 → exits loop → cursor closes.
+
+
+
+--> DECLARE CURSOR → Defines a cursor for a query.
+--> DECLARE cur CURSOR FOR SELECT customer_name FROM customers;
+--> DECLARE HANDLER → Tells MySQL what to do when no more rows are found.
+--> DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+--> OPEN cur → Activates the cursor and executes the query.
+--> FETCH cur INTO var → Retrieves the next row and stores it into variables.
+--> LOOP → Process each row one by one until all rows are fetched.
+--> LEAVE → Exit the loop when all rows are processed.
+--> CLOSE cur → Always close the cursor to free resources.
+
+
+
+
+Question 2:  Write a cursor-based procedure to display all product names with price greater than 50.
+
+
+DELIMITER $$
+
+CREATE PROCEDURE ShowExpensiveProducts()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE pname VARCHAR(100);
+    DECLARE pprice DECIMAL(10,2);
+
+    -- Cursor selects only products with price > 50
+    DECLARE cur CURSOR FOR 
+        SELECT product_name, price FROM products WHERE price > 50;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO pname, pprice;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        SELECT pname AS Product, pprice AS Price;
+    END LOOP;
+
+    CLOSE cur;
+END$$
+
+DELIMITER ;
+
+
+When you run:
+CALL ShowExpensiveProducts();
+
+
+--> It will print products like Running Shoes (60), Smart Watch (120), Formal Shoes (80) etc.
+
+
+
+====================================================================================================
+=============================   EXCEPTION HANDLING ===============================
+====================================================================================================
+
+Example 1:  Write a procedure that takes a customer id and shows their name. If the customer does not exist, display a message "Customer Not Found".
+
+DELIMITER $$
+
+CREATE PROCEDURE GetCustomerName(IN cid INT)
+BEGIN
+    DECLARE cname VARCHAR(100);
+
+    -- Handle case when no row found
+    DECLARE CONTINUE HANDLER FOR NOT FOUND
+    BEGIN
+        SELECT 'Customer Not Found' AS Message;
+    END;
+
+    SELECT customer_name INTO cname
+    FROM customers
+    WHERE customer_id = cid;
+
+    SELECT cname AS CustomerName;
+END$$
+
+DELIMITER ;
+
+
+Run the below:
+--> CALL GetCustomerName(1);   -- Will return Alice Johnson
+--> CALL GetCustomerName(99);  -- Will return "Customer Not Found"
+
+
+
+
+Example 2: Handle Stock Shortage in Orders
+Create a procedure to place an order. If stock is not enough, raise an exception and show "Not enough stock".
+
+DELIMITER $$
+
+CREATE PROCEDURE PlaceOrder(IN cid INT, IN pid INT, IN qty INT)
+BEGIN
+    DECLARE available_stock INT;
+
+    -- Generic exception handler
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SELECT 'Error occurred while placing order!' AS ErrorMessage;
+    END;
+
+    -- Check stock
+    SELECT stock INTO available_stock
+    FROM products
+    WHERE product_id = pid;
+
+    IF available_stock < qty THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Not enough stock';
+    ELSE
+        -- Deduct stock and insert order
+        UPDATE products SET stock = stock - qty WHERE product_id = pid;
+        INSERT INTO orders(customer_id, product_id, order_date, quantity)
+        VALUES(cid, pid, CURDATE(), qty);
+
+        SELECT 'Order placed successfully!' AS Message;
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+
+Run the below:
+--> CALL PlaceOrder(1, 1, 200);  -- Will throw "Not enough stock"
+--> CALL PlaceOrder(1, 1, 2);    -- Will place order successfully
+
+
+
+
+
+Example 3: Handle Division by Zero (Custom Exception)
+Write a procedure to calculate the average order quantity per customer. If a customer has no orders, handle division by zero.
+
+DELIMITER $$
+
+CREATE PROCEDURE AvgOrderQty(IN cid INT)
+BEGIN
+    DECLARE total_orders INT;
+    DECLARE total_qty INT;
+    DECLARE avg_qty DECIMAL(10,2);
+
+    -- Handle division by zero
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SELECT 'Error: Division by zero or invalid operation' AS ErrorMessage;
+    END;
+
+    SELECT COUNT(*), IFNULL(SUM(quantity),0)
+    INTO total_orders, total_qty
+    FROM orders WHERE customer_id = cid;
+
+    IF total_orders = 0 THEN
+        SELECT 'No orders for this customer' AS Message;
+    ELSE
+        SET avg_qty = total_qty / total_orders;
+        SELECT avg_qty AS AverageQuantity;
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+Run the below:
+--> CALL AvgOrderQty(1);   -- Shows average quantity for Alice Johnson
+--> CALL AvgOrderQty(10);  -- If no orders, message "No orders for this customer"
+
+
+
+
+
+Example 4: Prevent Negative Quantity in Orders. If someone tries to insert an order with a quantity ≤ 0, throw an error.
+
+DELIMITER $$
+
+CREATE TRIGGER before_order_insert_check
+BEFORE INSERT ON orders
+FOR EACH ROW
+BEGIN
+    IF NEW.quantity <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Quantity must be greater than zero';
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+Before inserting into orders, it checks the new quantity.
+If invalid (≤ 0), it raises a custom exception with message "Quantity must be greater than zero".
+
+
+
+
+
+Example 5: Restrict Orders from Certain Countries. Suppose your store does not ship to "China". If a customer from China places an order, throw an error.
+
+DELIMITER $$
+
+CREATE TRIGGER before_order_insert_country
+BEFORE INSERT ON orders
+FOR EACH ROW
+BEGIN
+    DECLARE cust_country VARCHAR(50);
+
+    -- Get customer country
+    SELECT country INTO cust_country
+    FROM customers
+    WHERE customer_id = NEW.customer_id;
+
+    -- If country is China, block order
+    IF cust_country = 'China' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Orders from China are not allowed';
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+
+Fetches the country of the customer trying to place an order.
+If the country is "China", it raises an exception and blocks the order.
