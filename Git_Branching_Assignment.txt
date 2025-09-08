@@ -1,0 +1,12 @@
+You are working on a project with multiple team members. The repository has the following branches:
+⦁	main / master: The main production branch.
+⦁	dev: The development branch where new features are integrated.
+⦁	feature1: A feature branch where you are working on implementing a new feature (feature1).
+⦁	feature2: A feature branch where another developer is working on a different feature (feature2).
+
+Your task is to:
+1.	Ensure your dev branch is up-to-date with the latest changes from main / master.
+2.	Create a new branch feature3 from dev and implement a new feature.
+3.	After completing the feature in feature3, merge it back into the dev branch.
+4.	Handle any merge conflicts that might arise during the merge process.
+5.	After successfully merging feature3 into dev, push the changes to the remote repository.
