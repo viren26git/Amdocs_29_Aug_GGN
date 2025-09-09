@@ -1,0 +1,87 @@
+Assignment 1:
+create 2 objects of the set interface in same class
+LinkedHashSet (L1 & L2)
+L1  - 1st object will be ( add two int, two float ,two char, one boolean)
+L2  - 2nd object will be be Integer type only and take 10 different random numbers from user console.
+(a) add two more elements
+(b) remove any elemnt
+(c) check if any string is presen or not
+(d) Check if any value of "5" present or not
+(e) clear the set
+
+Assignment 2:
+Create one object of treeset and add the any 6 programming languages in random order
+   - remove two languages
+   - add three more languages after removal
+   - Check if " Java" is part of your treeset or not
+   - remove all the elements from the treeset and display it
+
+
+Assignment 3:
+Create object of ArrayList and add
+6 fruits
+2 cities
+2 hobbies
+do following operations:
+- print the arraylist
+- remove one hobby
+- search("cricket")
+- remove 1 city & remove 1 fruit
+- print 4th & 6th element
+- replace the hobby "Singing" with new hobby "Dancing"
+- reverse the arraylist
+- add "Kerala" at 4th position and add "Mango" at 2nd position
+
+
+
+Assignment 4:
+Use LinkedList only in the below program
+   - Add  6 months (May, June, July, August, April, November)
+   - Add 'December' month as last
+   - Add 'January' month as first
+   - Add 'March' and then add 'Febuary' using the index based 
+   - Add 'September' and then add 'October' using the index based
+
+(1) Print the linkedlist in such a way that proper order of months are displayed
+(2) Get all the even months and print them 
+(3) Get all the odd months and print them
+(4) Use iterator to fetch and print all months 
+(5) Print the first and last month of the year together
+(6) remove your birthday month from the linkedList and print it
+(7) Check whether this linkedList contains any winter month inside it or not?
+(8) Fetch the first and last months using peek()
+(9) Remove the first and last months using poll()
+
+
+
+Assignment 5:
+Use HashMap
+Add 10 fruits into it and do the following operations:
+1) print map
+2) get all keys and values
+3) remove 4th fruit using value and 7th fruit using index
+4) check if map contains "banana" and "apple" fruit
+5) check if it contains 4th key or not
+6) hashcode of map
+7) clear map
+
+
+
+Assignment 6:
+Create object of LinkedHashmap of 10 countries of your choice( countrycode = key and countryname= value)
+do following operations:
+- fetch all the map keys
+- fetch all the map values
+- check if the value("India") exists or not
+- check if the key(45) exists or not
+- remove 1 country 
+
+Also create a new map with (key=statecode , value=statename) and marge with the above map
+- also delete the key(5)
+- check if the map is empty or not
+- clear the map
+
+Sort the final merged map 
+
+
+
