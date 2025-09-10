@@ -1,0 +1,51 @@
+package amdocs.testcases;
+
+import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.runner.RunWith;
+
+@RunWith(JUnitPlatform.class)   // this annotation is used to give the environment to run my junit test cases
+public class JUnitMethods {
+	
+	@BeforeAll
+	public void beforeAllMethod()
+	{
+		System.out.println("This will only execute BEFORE ALL once only in class");
+	}
+	
+	@AfterAll
+	public void AfterAllMethod()
+	{
+		System.out.println("This will only execute AFTER ALL once only in class");
+	}
+	
+	@BeforeEach
+	public void BeforeEachMethod()
+	{
+		System.out.println("This will only execute before evry test method");
+	}
+	
+	@AfterEach
+	public void AfterEachMethod()
+	{
+		System.out.println("This will only execute after evry test method");
+	}
+	
+	@Test
+	public void test1()
+	{
+		System.out.println("This is first test case ");
+	}
+	
+	@Test
+	public void test2()
+	{
+		System.out.println("This is second test case ");
+	}
+
+
+}
