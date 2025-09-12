@@ -1,0 +1,23 @@
+Assignment 1:
+- Login to gmail and pass the real email id
+- Enter the password and click on submit button to go to mailbox
+
+
+Assignment 2:
+- Login to Amazon and go to homepage
+- search the pen drive in the search box
+- use filters to select 16 GB pen drive and select any one of the pen drive on the page
+- Click on the product page of the pen drive
+- Go back
+
+Assignment 3:
+- Enter URL https://www.lambdatest.com in any browser to reach the landing page of the LambdaTest website.
+- Click sign up button
+- Fill the details of the sign up form
+- Clear all the fields
+- Go back
+- Click on Sign up button
+
+
+Assignemnt 4:
+Fill the registration form : -  http://demo.automationtesting.in/Register.html
